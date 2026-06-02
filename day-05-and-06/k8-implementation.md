@@ -22,7 +22,7 @@ The backend reads these environment variables:
 - `MONGODB_URI`
 - `JWT_SECRET`
 
-The frontend currently calls the backend at `http://localhost:5000`, so for a local Kubernetes demo we will keep the backend reachable on the local machine with port-forwarding.
+The frontend now calls the backend through the `/api` path, so the same code can work in ECS with ALB path routing or locally through the Vite dev proxy.
 
 ## 2. Kubernetes Architecture for the Demo
 
@@ -198,7 +198,7 @@ kubectl logs -n day05-06-demo deploy/backend
 
 ## 7. Deploy the Frontend
 
-The frontend is the top tier. In this codebase it runs the Vite dev server on port `5173`.
+The frontend is the top tier. In this codebase it runs the Vite dev server on port `5173` during local development and serves static files from Nginx in production.
 
 Create a file named `frontend.yaml`:
 
@@ -296,7 +296,7 @@ Open the app in the browser:
 http://localhost:5173
 ```
 
-Because the React code calls `http://localhost:5000`, the backend port-forward keeps the API reachable from the browser.
+Because the React code uses the `/api` path, Vite forwards it to the local backend in development, and ECS can route the same path to the backend service in production.
 
 ## 10. Demo Workflow 
 
@@ -342,7 +342,7 @@ kubectl delete namespace day05-06-demo
 
 This guide is intentionally simple for learning.
 
-For a real production setup, the frontend should not call `localhost:5000` directly. Instead, you would usually:
+For a real production setup, the frontend should not call a hardcoded localhost backend directly. Instead, you would usually:
 
 - Put the backend behind an Ingress or LoadBalancer
 - Use environment-based API URLs in the frontend

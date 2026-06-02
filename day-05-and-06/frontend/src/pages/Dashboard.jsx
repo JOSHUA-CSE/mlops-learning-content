@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart3, LogOut, UploadCloud, TrendingUp, Users, DollarSign, Activity } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import axios from 'axios';
+import api from '../lib/api';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -22,12 +22,12 @@ const Dashboard = () => {
 
     const fetchDashboard = async () => {
       try {
-        const userRes = await axios.get('http://localhost:5000/api/auth/me', {
+        const userRes = await api.get('/auth/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUser(userRes.data);
 
-        const dataRes = await axios.get('http://localhost:5000/api/data/metrics', {
+        const dataRes = await api.get('/data/metrics', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setDashboardData(dataRes.data);
@@ -62,7 +62,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('token');
 
     try {
-      await axios.post('http://localhost:5000/api/data/upload', formData, {
+      await api.post('/data/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`
@@ -70,7 +70,7 @@ const Dashboard = () => {
       });
       
       // Refetch data
-      const dataRes = await axios.get('http://localhost:5000/api/data/metrics', {
+      const dataRes = await api.get('/data/metrics', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setDashboardData(dataRes.data);
